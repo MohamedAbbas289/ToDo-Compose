@@ -1,0 +1,282 @@
+package com.example.to_docompose.ui.screens.list
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.to_docompose.R
+import com.example.to_docompose.components.PriorityItem
+import com.example.to_docompose.data.models.Priority
+import com.example.to_docompose.ui.theme.LARGE_PADDING
+import com.example.to_docompose.ui.theme.TOP_APP_BAR_HEIGHT
+
+@Composable
+fun ListAppBar(modifier: Modifier = Modifier) {
+//    DefaultListAppBar(
+//        onSearchClicked = {},
+//        onSortClicked = {},
+//        onDeleteClicked = {}
+//    )
+    SearchAppBar(
+        text = "",
+        onTextChange = {},
+        onCloseClicked = {},
+        onSearchClicked = {}
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DefaultListAppBar(
+    onSearchClicked: () -> Unit = {},
+    onSortClicked: (Priority) -> Unit = {},
+    onDeleteClicked: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = {
+            Text(
+                "Tasks",
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        },
+        actions = {
+            ListAppBarActions(
+                onSearchClicked = onSearchClicked,
+                onSortClicked = onSortClicked,
+                onDeleteClicked = onDeleteClicked
+            )
+        },
+        modifier = modifier.background(MaterialTheme.colorScheme.primary),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    )
+}
+
+@Composable
+fun ListAppBarActions(
+    onSearchClicked: () -> Unit,
+    onSortClicked: (Priority) -> Unit,
+    onDeleteClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SearchAction(onSearchClicked = onSearchClicked)
+    SortAction(onSortClicked = onSortClicked)
+    DeleteAllAction(onDeleteClicked = onDeleteClicked)
+}
+
+@Composable
+fun SearchAction(
+    onSearchClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(onClick = { onSearchClicked() }) {
+        Icon(
+            imageVector = Icons.Filled.Search,
+            contentDescription = stringResource(R.string.search_tasks)
+        )
+    }
+}
+
+@Composable
+fun SortAction(
+    onSortClicked: (Priority) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    IconButton(onClick = { expanded = true }) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_filter_list),
+            contentDescription = stringResource(R.string.sort_tasks)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onSortClicked(Priority.LOW)
+                },
+                text = {
+                    PriorityItem(priority = Priority.LOW)
+                }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onSortClicked(Priority.HIGH)
+                },
+                text = {
+                    PriorityItem(priority = Priority.HIGH)
+                }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onSortClicked(Priority.NONE)
+                },
+                text = {
+                    PriorityItem(priority = Priority.NONE)
+                }
+            )
+
+        }
+    }
+}
+
+@Composable
+fun DeleteAllAction(
+    onDeleteClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    IconButton(onClick = { expanded = true }) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_vert_more),
+            contentDescription = stringResource(R.string.delete_all_action)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onDeleteClicked()
+                },
+                text = {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = LARGE_PADDING),
+                        text = stringResource(id = R.string.delete_all_action),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun SearchAppBar(
+    text: String,
+    onTextChange: (String) -> Unit,
+    onCloseClicked: () -> Unit,
+    onSearchClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(TOP_APP_BAR_HEIGHT),
+        shadowElevation = 8.dp
+    ) {
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = text,
+            onValueChange = {
+                onTextChange(it)
+            },
+            placeholder = {
+                Text(
+                    modifier = Modifier
+                        .alpha(0.5f),
+                    text = stringResource(R.string.search)
+                )
+            },
+            textStyle = TextStyle(
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+            ),
+            singleLine = true,
+            leadingIcon = {
+                IconButton(
+                    modifier = Modifier
+                        .alpha(0.38f),
+                    onClick = {}
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = stringResource(id = R.string.search)
+                    )
+                }
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        onCloseClicked()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(id = R.string.close_icon)
+                    )
+
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearchClicked(text)
+                }
+            )
+
+        )
+
+    }
+}
+
+@Preview
+@Composable
+private fun DefaultListAppBarPreview() {
+    DefaultListAppBar(
+        onSearchClicked = {},
+        onSortClicked = {},
+        onDeleteClicked = {}
+    )
+}
+
+@Preview
+@Composable
+private fun SearchAppBarPreview() {
+    SearchAppBar(
+        text = "",
+        onTextChange = {},
+        onCloseClicked = {},
+        onSearchClicked = {}
+    )
+}
