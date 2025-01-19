@@ -1,24 +1,37 @@
 package com.example.to_docompose.ui.screens.list
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.to_docompose.ui.viewmodels.SharedViewModel
+import com.example.to_docompose.util.SearchAppBarState
 
 @Composable
 fun ListScreen(
     navigateToTaskScreen: (taskId: Int) -> Unit,
+    sharedViewModel: SharedViewModel
 ) {
+
+    val searchAppBarState: SearchAppBarState by sharedViewModel.searchAppBarState
+    val searchTextState: String by sharedViewModel.searchTextState
+
     Scaffold(
         topBar = {
-            ListAppBar()
+            ListAppBar(
+                sharedViewModel = sharedViewModel,
+                searchAppBarState = searchAppBarState,
+                searchTextState = searchTextState
+            )
         },
-        content = {
-            it
+        content = { padding ->
+            ListContent(modifier = Modifier.padding(padding))
         },
         floatingActionButton = {
             ListFab(onFabClicked = navigateToTaskScreen)
@@ -42,9 +55,3 @@ fun ListFab(
     }
 }
 
-
-@Composable
-@Preview
-private fun ListScreenPreview() {
-    ListScreen {}
-}
