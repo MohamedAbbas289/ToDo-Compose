@@ -7,4 +7,13 @@
     <string name="search">Search</string>
     <string name="close_icon">close icon</string>
     <string name="list_screen_title">Tasks</string>
+    <string name="sad_face_icon">sad face icon</string>
+    <string name="empty_content">Empty Content</string>
+    <string name="add_task">Add Task</string>
+    <string name="back_arrow">back arrow</string>
+    <string name="delete_icon">delete icon</string>
+    <string name="update_icon">update icon</string>
+    <string name="drop_down_arrow">drop down arrow</string>
+    <string name="title">title</string>
+    <string name="description">description</string>
 </resources>

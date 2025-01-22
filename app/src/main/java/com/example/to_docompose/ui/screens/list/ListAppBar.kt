@@ -244,7 +244,8 @@ fun SearchAppBar(
                 Text(
                     modifier = Modifier
                         .alpha(0.5f),
-                    text = stringResource(R.string.search)
+                    text = stringResource(R.string.search),
+                    color = MaterialTheme.colorScheme.primary
                 )
             },
             textStyle = TextStyle(
@@ -259,6 +260,7 @@ fun SearchAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
+                        tint = MaterialTheme.colorScheme.primary,
                         contentDescription = stringResource(id = R.string.search)
                     )
                 }
