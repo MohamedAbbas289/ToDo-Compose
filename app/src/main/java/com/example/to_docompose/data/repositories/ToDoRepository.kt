@@ -30,7 +30,7 @@ class ToDoRepository @Inject constructor(
         toDoDao.deleteTask(task)
     }
 
-    suspend fun deleteAllTask() {
+    suspend fun deleteAllTasks() {
         toDoDao.deleteAllTasks()
     }
 

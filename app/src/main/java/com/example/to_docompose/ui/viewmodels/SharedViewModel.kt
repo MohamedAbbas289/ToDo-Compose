@@ -38,8 +38,28 @@ class SharedViewModel @Inject constructor(
     val searchTextState: MutableState<String> =
         mutableStateOf("")
 
+    private val _searchedTasks = MutableStateFlow<RequestState<List<ToDoTask>>>(RequestState.Idle)
+    val searchedTasks: StateFlow<RequestState<List<ToDoTask>>> = _searchedTasks
+
     private val _allTasks = MutableStateFlow<RequestState<List<ToDoTask>>>(RequestState.Idle)
     val allTasks: StateFlow<RequestState<List<ToDoTask>>> = _allTasks
+
+    fun searchDatabase(searchQuery: String) {
+        viewModelScope.launch {
+            try {
+                viewModelScope.launch {
+                    toDoRepository.searchDatabase(searchQuery = "%$searchQuery%")
+                        .collect { searchedTasks ->
+                            _searchedTasks.value = RequestState.Success(searchedTasks)
+                        }
+                }
+            } catch (e: Exception) {
+                _searchedTasks.value = RequestState.Error(e)
+                Log.e("SharedViewModel", e.toString())
+            }
+            searchAppBarState.value = SearchAppBarState.TRIGGERED
+        }
+    }
 
     fun getAllTasks() {
         viewModelScope.launch {
@@ -90,6 +110,12 @@ class SharedViewModel @Inject constructor(
         }
     }
 
+    private fun deleteAllTasks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.deleteAllTasks()
+        }
+    }
+
     private fun addTask() {
         viewModelScope.launch(Dispatchers.IO) {
             val toDoTask = ToDoTask(
@@ -118,7 +144,7 @@ class SharedViewModel @Inject constructor(
             }
 
             Action.DELETE_ALL -> {
-                //deleteAllTasks()
+                deleteAllTasks()
             }
 
             Action.UNDO -> {
