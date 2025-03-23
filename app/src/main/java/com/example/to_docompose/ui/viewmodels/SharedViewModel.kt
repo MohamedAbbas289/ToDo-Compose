@@ -67,6 +67,14 @@ class SharedViewModel @Inject constructor(
         MutableStateFlow<RequestState<Priority>>(RequestState.Idle)
     val sortState: StateFlow<RequestState<Priority>> = _sortState
 
+    private val _selectedTask: MutableStateFlow<ToDoTask?> = MutableStateFlow(null)
+    val selectedTask: StateFlow<ToDoTask?> = _selectedTask
+
+    init {
+        getAllTasks()
+        readSortState()
+    }
+
     fun searchDatabase(searchQuery: String) {
         viewModelScope.launch {
             try {
@@ -84,7 +92,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun getAllTasks() {
+    private fun getAllTasks() {
         viewModelScope.launch {
             try {
                 toDoRepository.getAllTasks.collect {
@@ -98,8 +106,6 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    private val _selectedTask: MutableStateFlow<ToDoTask?> = MutableStateFlow(null)
-    val selectedTask: StateFlow<ToDoTask?> = _selectedTask
 
     fun getSelectedTask(taskId: Int) {
         viewModelScope.launch {
@@ -109,7 +115,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun readSortState() {
+    private fun readSortState() {
         _sortState.value = RequestState.Loading
         viewModelScope.launch {
             try {
@@ -173,6 +179,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun handleDatabaseActions(action: Action) {
+        Log.d("HandleDatabaseActions", "action.toString(): Triggered")
         when (action) {
             Action.ADD -> {
                 addTask()
@@ -195,11 +202,8 @@ class SharedViewModel @Inject constructor(
                 addTask()
             }
 
-            else -> {
-
-            }
+            Action.NO_ACTION -> {}
         }
-        this.action.value = Action.NO_ACTION
     }
 
     fun updateTaskFields(selectedTask: ToDoTask?) {

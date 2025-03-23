@@ -26,14 +26,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun ListScreen(
     navigateToTaskScreen: (taskId: Int) -> Unit,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    action: Action
 ) {
-    LaunchedEffect(key1 = true) {
-        sharedViewModel.getAllTasks()
-        sharedViewModel.readSortState()
+
+    LaunchedEffect(key1 = action) {
+        sharedViewModel.handleDatabaseActions(action = action)
     }
 
-    val action by sharedViewModel.action
+
     val sortState by sharedViewModel.sortState.collectAsState()
     val lowPriorityTasks by sharedViewModel.lowPriorityTasks.collectAsState()
     val highPriorityTasks by sharedViewModel.highPriorityTasks.collectAsState()
@@ -45,18 +46,17 @@ fun ListScreen(
 
     val snackBarHostState = remember { SnackbarHostState() }
 
-    //sharedViewModel.handleDatabaseActions(action = action)
+
 
     DisplaySnackBar(
         snackBarHostState = snackBarHostState,
-        onComplete = { sharedViewModel.updateAction(newAction = it) },
+        onComplete = { sharedViewModel.action.value = it },
         onUndoClicked = {
             //sharedViewModel.action.value = it
             sharedViewModel.updateAction(newAction = it)
         },
         taskTitle = sharedViewModel.title.value,
-        action = action,
-        handleDatabaseActions = { sharedViewModel.handleDatabaseActions(action = action) }
+        action = action
     )
 
     Scaffold(
@@ -113,10 +113,8 @@ fun DisplaySnackBar(
     onComplete: (Action) -> Unit,
     onUndoClicked: (Action) -> Unit,
     taskTitle: String,
-    action: Action,
-    handleDatabaseActions: () -> Unit
+    action: Action
 ) {
-    handleDatabaseActions()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = action) {
@@ -133,6 +131,7 @@ fun DisplaySnackBar(
                     onUndoClicked = onUndoClicked
                 )
             }
+            onComplete(Action.NO_ACTION)
         }
     }
 

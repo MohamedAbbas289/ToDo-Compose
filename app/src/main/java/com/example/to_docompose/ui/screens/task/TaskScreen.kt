@@ -2,6 +2,7 @@ package com.example.to_docompose.ui.screens.task
 
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -25,6 +26,9 @@ fun TaskScreen(
     val priority: Priority by sharedViewModel.priority
 
     val context = LocalContext.current
+
+    //BackHandler(onBackPressed = { navigateToListScreen(Action.NO_ACTION) })
+    BackHandler { navigateToListScreen(Action.NO_ACTION) }
 
     Scaffold(
         topBar = {
@@ -75,3 +79,28 @@ fun displayToast(context: Context) {
         Toast.LENGTH_SHORT
     ).show()
 }
+
+//@Composable
+//fun BackHandler(
+//    backDispatcher: OnBackPressedDispatcher? =
+//        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
+//    onBackPressed: () -> Unit
+//) {
+//    val currentBackPressed by rememberUpdatedState(newValue = onBackPressed)
+//
+//    val backOnBack = remember {
+//        object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                currentBackPressed()
+//                Log.d("BackHandler", "handleOnBackPressed: Triggered")
+//            }
+//        }
+//    }
+//    DisposableEffect(key1 = backDispatcher) {
+//        backDispatcher?.addCallback(backOnBack)
+//
+//        onDispose {
+//            backOnBack.remove()
+//        }
+//    }
+//}
